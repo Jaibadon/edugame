@@ -1,9 +1,15 @@
 const canvas = $("canvas");
 
-canvas.width(1024);
-canvas.height(576);
+const height = 1024;
+const width = 576;
+
+canvas.width(height);
+canvas.height(width);
 
 const c = canvas[0].getContext('2d');
 
 c.fillStyle = "white";
-c.fillRect(0,0, 1024, 576);
+c.fillRect(0,0, height, width);
+
+const map = new Image();
+map.src = './img/placeholdermap.png';
