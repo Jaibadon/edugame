@@ -13,3 +13,13 @@ c.fillRect(0,0, height, width);
 
 const map = new Image();
 map.src = './img/placeholdermap.png';
+
+const playerDownImage = new Image()
+playerDownImage.src = './img/playerDown.png'
+
+console.log(map);
+
+map.onload = () => {
+    c.drawImage(map, -750, -550);
+}
+
