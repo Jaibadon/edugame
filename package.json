@@ -1,0 +1,32 @@
+{
+  "name": "sciencepokemon",
+  "version": "1.0.0",
+  "description": "Educational Game involving Science, using canvas and firebase.",
+  "main": "./src/firebaseinit.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jaibadon/edugame.git"
+  },
+  "keywords": [
+    "science",
+    "game"
+  ],
+  "author": "Jai Nielsen, Lewis Lou, Dom Sorrila, Jim Huang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jaibadon/edugame/issues"
+  },
+  "homepage": "https://github.com/Jaibadon/edugame#readme",
+  "dependencies": {
+    "firebase": "^9.6.10",
+    "firebaseui": "^6.0.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
+  }
+}
