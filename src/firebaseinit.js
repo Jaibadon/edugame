@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgB1Xzs2GpuxDM3AAXCDHrqNMSW9dJroQ",
@@ -13,15 +13,38 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth = getAuth();
 
-onAuthStateChanged(auth, user => {
-    if(user != null){
-        console.log("Logged In Succesfully");
+const whenSignedIn = document.getElementById('whenSignedIn');
+const whenSignedOut = document.getElementById('whenSignedOut');
+
+const signInBtn = document.getElementById('signInBtn');
+const signOutBtn = document.getElementById('signOutBtn');
+
+const userDetails = document.getElementById('userDetails');
+
+
+const provider = new GoogleAuthProvider();
+
+/// Sign in event handlers
+
+signInBtn.onclick = () => signInWithPopup(auth, provider);
+
+signOutBtn.onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // signed in
+        whenSignedIn.hidden = false;
+        whenSignedOut.hidden = true;
+        userDetails.innerHTML = `<h3>Hello ${user.displayName}!</h3> <p>User ID: ${user.uid}</p>`;
+
+    } else {
+        // not signed in
+        whenSignedIn.hidden = true;
+        whenSignedOut.hidden = false;
+        userDetails.innerHTML = '';
     }
-    else {
-        console.log("Not Logged In!");
-    }
-})
+});
 
 
