@@ -1,3 +1,5 @@
+//root pass for wsl is Justic6a
+
 const canvas = $("canvas");
 
 const height = 1024;
@@ -15,7 +17,7 @@ const map = new Image();
 map.src = './img/placeholdermap.png';
 
 const playerDownImage = new Image()
-playerDownImage.src = './img/playerDown.png'
+playerDownImage.src = './img/playerDown.png'    
 
 console.log(map);
 
