@@ -23,3 +23,4 @@ map.onload = () => {
     c.drawImage(map, -750, -550);
 }
 
+
