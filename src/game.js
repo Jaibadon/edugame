@@ -184,3 +184,4 @@ function checkanswer(){
     attackbutton.addEventListener("click", question);
 }
 
+
