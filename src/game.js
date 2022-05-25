@@ -16,7 +16,7 @@ var piter =0;
 
 var enemy = {};
 
-enemy.health = 20;
+enemy.health = 2;
 
 player.health = 20;
 
@@ -76,7 +76,13 @@ waspImage.src = './img/Wasp.png'
 const slimeImage = new Image();
 slimeImage.src = './img/Slime.png'
 
-enemy.type = "bat";
+const heartImage = new Image();
+heartImage.src = './img/Heart.png'
+
+const shieldImage = new Image();
+shieldImage.src = './img/Sheild.png'
+
+enemy.type = 2;
 
 console.log(map);
 
@@ -113,22 +119,21 @@ function loadBG() {
         c.stroke();
 
         if(document.getElementsByClassName("attackbutton").length == 0){
-        var floatingDiv = document.getElementById("floatingDiv");
+        var attackdamagetext = document.createElement("div");
+        document.getElementById("whenSignedIn").appendChild(attackdamagetext);
+        attackdamagetext.id = "attackdamagetext";
+        attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 5; left: 80%; display: inline-block;";
+        attackdamagetext.style.top = canvas.height-10 + "px"
         var attackbutton = document.createElement("button");
-        floatingDiv.appendChild(attackbutton);
+        attackdamagetext.appendChild(attackbutton);
         attackbutton.classList.add('attackbutton');
         attackbutton.innerHTML = "ATTACK";
         attackbutton.addEventListener("click", question);
         }
 
-        
-
         biter++;
-
         
-        
-        
-        if(enemy.type == "bat"){
+        if(enemy.type == 0){
             c.drawImage(batImage, 
                 (batImage.width / 6) * (biter%6),0,(batImage.width / 6), batImage.height
                 ,enemy.posx, canvas.height / 2, (batImage.width)/2, (batImage.height*6)/2);
@@ -137,7 +142,7 @@ function loadBG() {
                 }
                 var dividsion = 3;
         }
-        else if(enemy.type == "wasp"){
+        else if(enemy.type == 1){
             c.drawImage(waspImage, 
                 (waspImage.width / 3) * (biter%3),0,(waspImage.width / 3), waspImage.height
                 ,canvas.width / 2, canvas.height / 2, (waspImage.width/3)/1.5, (waspImage.height)/1.5);
@@ -146,7 +151,7 @@ function loadBG() {
                 }
                 var dividsion = 2;
         }
-        else if(enemy.type == "slime"){
+        else if(enemy.type == 2){
             c.drawImage(slimeImage, 
                 (slimeImage.width / 9) * (biter%9),0,(slimeImage.width / 9), slimeImage.height
                 ,canvas.width / 2, canvas.height / 2, (slimeImage.width), (slimeImage.height*9));
@@ -166,7 +171,7 @@ function loadBG() {
         else{
             c.drawImage(playerImage, 
                 (playerImage.width / 3) * (piter%3),0,(playerImage.width / 3), playerImage.height
-                ,canvas.width / 3, canvas.height / 2, playerImage.width, playerImage.height * 3); 
+                ,canvas.width / 3, canvas.height / 2, (playerImage.width), playerImage.height * 3); 
             
         }
         secondtime += 1;
@@ -183,7 +188,7 @@ function isLower(str) {
 
 
 function question(){
-    var questions = ["FeCl3 + 3NaOH → Fe(OH)3 + 3NaCl", "C3H8 + 5O2 → 3CO2 + 4H2O"];
+    var questions = ["FeCl3 + 3NaOH → Fe(OH)3 + 3NaCl", "C3H8 + 5O2 → 3CO2 + 4H2O", "N+O2 → Na2O", "K + Cl2 → KCl", "Al + Br2 → AlBr2", "Li + S	→ Li2S", "CO2 + H2O → C6H12O6 + O2", "SiCl4 + H2O → H4SiO4 + HCl", "Al + HCl → AlCl3 + H2", "Na2CO3 + HCl → NaCl + H2O + CO2", "C7H6O2 + O2 → CO2 + H2O", "Fe2(SO4)3 + KOH → K2SO4 + Fe(OH)3", "Ca3(PO4)2 + SiO2 → P4O10 + CaSiO3", "KClO3 → KClO4 + KCl", "Al2(SO4)3 + Ca(OH)2 → Al(OH)3 + CaSO4", "H2SO4 + HI → H2S + I2 + H2O"];
     var randomnumber = Math.floor(Math.random() * questions.length);
     console.log(randomnumber +"yo");
     var i = 0;
@@ -234,6 +239,11 @@ function question(){
     while (floatingDiv.firstChild) {
         floatingDiv.removeChild(floatingDiv.lastChild);
     }
+    var attackdamagetext = document.getElementById("attackdamagetext");
+    while (attackdamagetext.firstChild) {
+        attackdamagetext.removeChild(attackdamagetext.lastChild);
+    }
+
 
     
 
@@ -275,9 +285,9 @@ function question(){
     }
 
     var attackbutton = document.createElement("button");
-    floatingDiv.appendChild(attackbutton);
+    attackdamagetext.appendChild(attackbutton);
     attackbutton.classList.add('attackbutton');
-    attackbutton.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;ATTACK";
+    attackbutton.innerHTML = "ATTACK";
     attackbutton.addEventListener("click", checkanswer);
 
 }
@@ -299,13 +309,17 @@ function checkanswer(){
     while (floatingDiv.firstChild) {
         floatingDiv.removeChild(floatingDiv.lastChild);
     }
+    var attackdamagetext = document.getElementById("attackdamagetext");
+    while (attackdamagetext.firstChild) {
+        attackdamagetext.removeChild(attackdamagetext.lastChild);
+    }
 
     damageEnemy(enemydamage);
 
     damagePlayer(3);
 
     var attackbutton = document.createElement("button");
-    floatingDiv.appendChild(attackbutton);
+    attackdamagetext.appendChild(attackbutton);
     attackbutton.classList.add('attackbutton');
     attackbutton.innerHTML = "ATTACK";
     attackbutton.addEventListener("click", question);
@@ -314,16 +328,22 @@ function checkanswer(){
 
 
 function damageEnemy(enemydamage){
+    var randomnumber = Math.floor(Math.random() * 3);
+    if(enemy.health-enemydamage<1){
+        if(difmode<7){
+            difmode++;
+        }
+        enemy.health = 20;
+        enemy.type = randomnumber;
+        return;
+    }
+   
     if(enemydamage>0){
         var enemydamagetext = document.createElement("div");
         document.getElementById("whenSignedIn").appendChild(enemydamagetext);
         enemydamagetext.style = "font-size: 4vw; position: absolute; z-index: 5; top: 40% ;left: 75%; display: inline-block;";
-        if(enemydamage > 1){
             enemydamagetext.innerHTML = "-" + (enemydamage);
-        }
-        else{
-            enemydamagetext.innerHTML = "-" + enemydamage;
-        }
+        
         var fadeEffect = setInterval(function () {
             if (!enemydamagetext.style.opacity) {
                 enemydamagetext.style.opacity = 1;
@@ -356,17 +376,14 @@ function damageEnemy(enemydamage){
     c.fill();
     console.log(enemy.health);
 
-    if(difmode<7){
-        if(enemydamage>1){
-            difmode++;
-        }
-    }
+    
 }
 
 function damagePlayer(enemydamage){
     if(player.health-enemydamage<0){
         exiting = true;
         deathScreen();
+        return;
     }
     if(enemydamage>0){
         var enemydamagetext = document.createElement("div");
@@ -409,6 +426,8 @@ function damagePlayer(enemydamage){
     c.rect(eposx, eposy,100-healthchunk, 10);
     c.fill();
 
+    c.drawImage(heartImage, eposx+100, eposy-17, heartImage.width/2, heartImage.height/2); 
+
     console.log(player.health);
 }
 
@@ -419,4 +438,5 @@ function deathScreen(){
         c.rect(0, 0, canvas.width, canvas.height);
         c.fill();
 
+        floatingDiv
 }
