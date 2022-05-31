@@ -1,4 +1,6 @@
-//root pass for wsl is Justic6a
+//This code is so bad, even I, the creator cannot read it. but who cares, it works lol.
+
+
 //difficulty of questions
 var difmode = 1;
 
@@ -22,6 +24,10 @@ enemy.orghealth = 5;
 
 player.health = 20;
 
+player.defense = 5;
+
+player.orgdefense = 10;
+
 document.addEventListener("DOMContentLoaded", function(event) {
     var ahash = window.location.hash.slice(1);
     if(window.location.hash == ""){
@@ -30,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
     else{
             if(ahash == 'game'){
                show('game','home','about');
-               console.log("tadnfjndjfnv");
             }
             else if(ahash == 'home'){
                 show('home','game','about');
@@ -86,9 +91,52 @@ shieldImage.src = './img/Sheild.png'
 
 enemy.type = 2;
 
-console.log(map);
+map.onload = function(){titleScreen();};
 
-map.onload = function(){loadBG(map);};
+function titleScreen(){
+    c.filter = 'blur(5px)';
+
+    var mapaspect = (map.naturalWidth/map.naturalHeight);
+    var canvasaspect = (canvas.width/ canvas.height);
+    if(mapaspect>canvasaspect){
+        c.imageSmoothingEnabled = false;
+        var owidth = map.naturalWidth;
+        var fwidth = map.naturalHeight*canvasaspect;
+        var sx = (owidth-fwidth)/2;
+        c.drawImage(map, sx, 0, fwidth, map.naturalHeight, 0,0, c.canvas.width, c.canvas.height);
+    }
+    else{
+        c.imageSmoothingEnabled = false;
+        var oheight = map.naturalHeight;
+        var fheight = map.naturalWidth*canvasaspect;
+        var sy = (fheight-oheight)/2;
+        c.drawImage(map, 0, sy, map.naturalWidth, fheight, 0,0, c.canvas.width, c.canvas.height);
+    }
+    c.filter = 'blur(0px)';
+
+
+    let myFont = new FontFace(
+        "retext",
+        "url(https://fonts.gstatic.com/s/vt323/v17/pxiKyp0ihIEF2isfFJU.woff2)"
+      );
+      
+      myFont.load().then((font) => {
+        document.fonts.add(font);
+        c.fillStyle = "#000000";
+        c.font = "40px retext";
+        c.fillText("Bozo Game", canvas.width/2.1, (canvas.height/2.6));
+      });
+
+      var attackdamagetext = document.createElement("div");
+      document.getElementById("gamecontainer").appendChild(attackdamagetext);
+      attackdamagetext.id = "attackdamagetext";
+      attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 6; top: 45%; left: 45%; display: inline-block;";
+      var attackbutton = document.createElement("button");
+      attackbutton.classList.add('attackbutton');
+      attackdamagetext.appendChild(attackbutton);
+      attackbutton.innerHTML = "New Game";
+      attackbutton.addEventListener("click", loadBG);
+}
 
 function loadBG() {
 
@@ -108,7 +156,6 @@ function loadBG() {
             var oheight = map.naturalHeight;
             var fheight = map.naturalWidth*canvasaspect;
             var sy = (fheight-oheight)/2;
-            console.log([sy,fheight,oheight,mapaspect,canvasaspect, map.naturalWidth, map.naturalHeight, canvas.width, canvas.height]);
             c.drawImage(map, 0, sy, map.naturalWidth, fheight, 0,0, c.canvas.width, c.canvas.height);
         }
 
@@ -195,7 +242,6 @@ function isLower(str) {
 function question(){
     var questions = ["FeCl3 + 3NaOH → Fe(OH)3 + 3NaCl", "C3H8 + 5O2 → 3CO2 + 4H2O", "N+O2 → Na2O", "K + Cl2 → KCl", "Al + Br2 → AlBr2", "Li + S	→ Li2S", "CO2 + H2O → C6H12O6 + O2", "SiCl4 + H2O → H4SiO4 + HCl", "Al + HCl → AlCl3 + H2", "Na2CO3 + HCl → NaCl + H2O + CO2", "C7H6O2 + O2 → CO2 + H2O", "Fe2(SO4)3 + KOH → K2SO4 + Fe(OH)3", "Ca3(PO4)2 + SiO2 → P4O10 + CaSiO3", "KClO3 → KClO4 + KCl", "Al2(SO4)3 + Ca(OH)2 → Al(OH)3 + CaSO4", "H2SO4 + HI → H2S + I2 + H2O"];
     var randomnumber = Math.floor(Math.random() * questions.length);
-    console.log(randomnumber +"yo");
     var i = 0;
 
     switch(difmode){
@@ -205,6 +251,9 @@ function question(){
             var fquestn = questions[randomnumber].split(/\d/s);
             break;
         case 1:
+            while(questions[randomnumber].match(/\d(?=.*→)/g) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/\d(?=.*→)/g);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/\d(?=.*→)/g);
@@ -237,7 +286,6 @@ function question(){
             break;
     }
 
-    console.log(i);
 
     var j = 0;
     var floatingDiv = document.getElementById("floatingDiv");
@@ -259,16 +307,13 @@ function question(){
         beforetext.classList.add('questiontext');
 
         if(isLower(answerstoq[j])){
-            console.log("answerbox"+parseInt((j-1), 10));
             document.getElementById("answerbox"+parseInt((j-1), 10)).setAttribute("maxlength", 2);
             document.getElementById("answerbox"+parseInt((j-1), 10)).style.width = "1.8vw";
-            console.log(answerstoq, fquestn);
             answerstoq[j-1] = `${answerstoq[j-1]}${answerstoq[j]}`
             answerstoq.splice(j, j);    
 
             //fquestn[j-1] = `${fquestn[j-1]}${fquestn[j]}`
             //fquestn.splice(j, j);
-            console.log(answerstoq, fquestn);
             
         }
         else{
@@ -321,7 +366,16 @@ function checkanswer(){
 
     damageEnemy(enemydamage);
 
-    damagePlayer(3);
+    var randomnumber = Math.floor(Math.random() * (difmode + 2));
+
+    
+
+    if(randomnumber == 0){
+        damagePlayer(randomnumber, 5);
+    }
+    else{
+    damagePlayer(randomnumber);
+    }
 
     var attackbutton = document.createElement("button");
     attackdamagetext.appendChild(attackbutton);
@@ -385,14 +439,34 @@ function damageEnemy(enemydamage){
     c.fillStyle = "rgba(191, 61, 61)";
     c.rect(eposx, eposy,100-healthchunk, 10);
     c.fill();
-    console.log(enemy.health);
 
     
 }
 
 //please note that enemydamage is actually player damage here, im just too lazy to rename it
 function damagePlayer(enemydamage){
-    if(player.health-enemydamage<0){
+    var eposx = canvas.width-950;
+    var eposy = canvas.height/8*7;
+
+    if(arguments[1]==5){
+        var enemydamagetext = document.createElement("div");
+        document.getElementById("whenSignedIn").appendChild(enemydamagetext);
+        enemydamagetext.style = "font-size: 4vw; position: absolute; z-index: 5; top: 40% ;left: 30%; display: inline-block;";
+        enemydamagetext.innerHTML = "MISS!";
+        var fadeEffect = setInterval(function () {
+            if (!enemydamagetext.style.opacity) {
+                enemydamagetext.style.opacity = 1;
+            }
+            if (enemydamagetext.style.opacity > 0) {
+                enemydamagetext.style.opacity -= 0.1;
+            } else {
+                enemydamagetext.remove();
+                clearInterval(fadeEffect);
+            }
+        }, 200);
+    }
+
+    if(player.health-enemydamage<1){
         exiting = true;
         deathScreen();
         return;
@@ -419,12 +493,42 @@ function damagePlayer(enemydamage){
             }
         }, 200);
     }
-    player.health -= enemydamage;
+
+    var shieldchunk = (100/player.orgdefense)*(player.orgdefense-player.defense);
+
+    if(player.defense>0){
+        c.beginPath();
+        c.lineWidth = "2";
+        c.fillStyle = "rgba(255,255,255, 0.5)";
+        c.rect(eposx, eposy+30,100, 10);
+        c.stroke();
+    
+        c.beginPath();
+        c.fillStyle = "rgba(0, 61, 255)";
+        c.rect(eposx, eposy+30,100-shieldchunk, 10);
+        c.fill();
+
+        c.drawImage(shieldImage, eposx+100, eposy+15, shieldImage.width/2, shieldImage.height/2); 
+
+        player.defense -= enemydamage;
+    }
+    else {
+        c.beginPath();
+        c.lineWidth = "2";
+        c.fillStyle = "rgba(255,255,255, 0.5)";
+        c.rect(eposx, eposy+30,100, 10);
+        c.stroke();
+
+        c.drawImage(shieldImage, eposx+100, eposy+15, shieldImage.width/2, shieldImage.height/2); 
+
+        player.health -= enemydamage;
+    }
+
+    
 
     var healthchunk = 5*(20-player.health);
 
-    var eposx = canvas.width-950;
-    var eposy = canvas.height/8*7;
+
 
 
     c.beginPath();
@@ -438,10 +542,11 @@ function damagePlayer(enemydamage){
     c.rect(eposx, eposy,100-healthchunk, 10);
     c.fill();
 
-    c.drawImage(heartImage, eposx+100, eposy-17, heartImage.width/2, heartImage.height/2); 
+    c.drawImage(heartImage, eposx+100, eposy-19, heartImage.width/2, heartImage.height/2); 
 
-    console.log(player.health);
 }
+
+
 
 function deathScreen(){
         
@@ -449,6 +554,4 @@ function deathScreen(){
         c.fillStyle = "rgba(255, 20, 0, 0.3)";
         c.rect(0, 0, canvas.width, canvas.height);
         c.fill();
-
-        floatingDiv
 }
