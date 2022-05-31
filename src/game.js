@@ -12,11 +12,13 @@ var player = {};
 
 var biter = 0;
 
-var piter =0;
+var piter = 0;
 
 var enemy = {};
 
 enemy.health = 2;
+
+enemy.orghealth = 5;
 
 player.health = 20;
 
@@ -120,10 +122,10 @@ function loadBG() {
 
         if(document.getElementsByClassName("attackbutton").length == 0){
         var attackdamagetext = document.createElement("div");
-        document.getElementById("whenSignedIn").appendChild(attackdamagetext);
+        document.getElementById("gamecontainer").appendChild(attackdamagetext);
         attackdamagetext.id = "attackdamagetext";
-        attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 5; left: 80%; display: inline-block;";
-        attackdamagetext.style.top = canvas.height-10 + "px"
+        attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 6; left: 80%; display: inline-block;";
+        attackdamagetext.style.top = 49 + "vw"
         var attackbutton = document.createElement("button");
         attackdamagetext.appendChild(attackbutton);
         attackbutton.classList.add('attackbutton');
@@ -134,6 +136,7 @@ function loadBG() {
         biter++;
         
         if(enemy.type == 0){
+            //bat
             c.drawImage(batImage, 
                 (batImage.width / 6) * (biter%6),0,(batImage.width / 6), batImage.height
                 ,enemy.posx, canvas.height / 2, (batImage.width)/2, (batImage.height*6)/2);
@@ -143,18 +146,20 @@ function loadBG() {
                 var dividsion = 3;
         }
         else if(enemy.type == 1){
+            //sting
             c.drawImage(waspImage, 
                 (waspImage.width / 3) * (biter%3),0,(waspImage.width / 3), waspImage.height
-                ,canvas.width / 2, canvas.height / 2, (waspImage.width/3)/1.5, (waspImage.height)/1.5);
+                ,enemy.posx, canvas.height / 2, (waspImage.width/3)/1.5, (waspImage.height)/1.5);
                 if(exiting == false){
                     setTimeout(loadBG, 150);
                 }
                 var dividsion = 2;
         }
         else if(enemy.type == 2){
+            //Slime
             c.drawImage(slimeImage, 
                 (slimeImage.width / 9) * (biter%9),0,(slimeImage.width / 9), slimeImage.height
-                ,canvas.width / 2, canvas.height / 2, (slimeImage.width), (slimeImage.height*9));
+                ,enemy.posx, canvas.height / 2, (slimeImage.width)/3, (slimeImage.height*9)/3);
                 if(exiting == false){
                     setTimeout(loadBG, 100);
                 }
@@ -171,7 +176,7 @@ function loadBG() {
         else{
             c.drawImage(playerImage, 
                 (playerImage.width / 3) * (piter%3),0,(playerImage.width / 3), playerImage.height
-                ,canvas.width / 3, canvas.height / 2, (playerImage.width), playerImage.height * 3); 
+                ,canvas.width / 3, canvas.height / 2, (playerImage.width), playerImage.height*3); 
             
         }
         secondtime += 1;
@@ -329,11 +334,17 @@ function checkanswer(){
 
 function damageEnemy(enemydamage){
     var randomnumber = Math.floor(Math.random() * 3);
+    //if enemy is dead with amount of damage given
     if(enemy.health-enemydamage<1){
         if(difmode<7){
+            //if enemy is an even(slime and bat at this stage) then increase difmode.
+            if(randomnumber%2 == 0){
             difmode++;
+            }
         }
-        enemy.health = 20;
+        //enemy health is proportionate to difmode
+        enemy.orghealth = enemy.orghealth*difmode;
+        enemy.health = enemy.orghealth;
         enemy.type = randomnumber;
         return;
     }
@@ -358,7 +369,7 @@ function damageEnemy(enemydamage){
     }
     enemy.health -= enemydamage;
 
-    var healthchunk = 5*(20-enemy.health);
+    var healthchunk = (100/enemy.orghealth)*(enemy.orghealth-enemy.health);
 
     var eposx = enemy.posx;
     var eposy = canvas.height/2;
@@ -379,6 +390,7 @@ function damageEnemy(enemydamage){
     
 }
 
+//please note that enemydamage is actually player damage here, im just too lazy to rename it
 function damagePlayer(enemydamage){
     if(player.health-enemydamage<0){
         exiting = true;
