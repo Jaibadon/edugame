@@ -28,6 +28,18 @@ player.defense = 5;
 
 player.orgdefense = 10;
 
+player.expr = 9;
+
+player.orgexpr = 10;
+
+player.level = 0;
+
+var exprate = 1.5;
+
+player.coins = 0;
+
+var exprboost = 1;
+
 document.addEventListener("DOMContentLoaded", function(event) {
     var ahash = window.location.hash.slice(1);
     if(window.location.hash == ""){
@@ -133,12 +145,17 @@ function titleScreen(){
       attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 6; top: 45%; left: 45%; display: inline-block;";
       var attackbutton = document.createElement("button");
       attackbutton.classList.add('attackbutton');
+      attackbutton.id = "newgame";
       attackdamagetext.appendChild(attackbutton);
       attackbutton.innerHTML = "New Game";
       attackbutton.addEventListener("click", loadBG);
 }
 
 function loadBG() {
+
+        if(document.getElementById("newgame") != null){
+            document.getElementById("newgame").remove();
+        }
 
         enemy.posx = (canvas.width / 2)+100;
     
@@ -167,17 +184,32 @@ function loadBG() {
         c.fill();
         c.stroke();
 
-        if(document.getElementsByClassName("attackbutton").length == 0){
+        c.fillStyle = "#000000";
+
+        c.font = "30px retext";
+        c.fillText("Level "+ (player.level + 1), 20, 65);
+
+        if(secondtime == 0){
+            question();
+        }
+
+        if(document.getElementsByClassName("skipbutton").length == 0 && document.getElementsByClassName("questiontext").length != 0){
         var attackdamagetext = document.createElement("div");
         document.getElementById("gamecontainer").appendChild(attackdamagetext);
         attackdamagetext.id = "attackdamagetext";
         attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 6; left: 80%; display: inline-block;";
-        attackdamagetext.style.top = 49 + "vw"
+        attackdamagetext.style.top = 49 + "vw";
         var attackbutton = document.createElement("button");
         attackdamagetext.appendChild(attackbutton);
         attackbutton.classList.add('attackbutton');
-        attackbutton.innerHTML = "ATTACK";
+        attackbutton.classList.add('skipbutton');
+        attackbutton.innerHTML = "Skip";
         attackbutton.addEventListener("click", question);
+        }
+        if(document.getElementsByClassName("questiontext").length == 0 && document.getElementsByClassName("skipbutton").length != 0){
+            document.querySelectorAll('.skipbutton').forEach(skip => {
+                skip.remove();
+              });
         }
 
         biter++;
@@ -246,6 +278,9 @@ function question(){
 
     switch(difmode){
         case 0:
+            while(questions[randomnumber].match(/\d/s) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/\d/s);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/\d/s);
@@ -260,26 +295,41 @@ function question(){
 
             break;
         case 2:
+            while(questions[randomnumber].match(/\d(?!.*→)/g) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/\d(?!.*→)/g);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/\d(?!.*→)/g);
             break;
         case 3:
+            while(questions[randomnumber].match(/\d/g) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/\d/g);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/\d/g);
             break;
         case 4:
+            while(questions[randomnumber].match(/[A-Za-z](?!.*→)/g) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/[A-Za-z](?!.*→)/g);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/[A-Za-z](?!.*→)/g);
             break;
         case 5:
+            while(questions[randomnumber].match(/\w(?!.*→)/g) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/\w(?!.*→)/g);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/\w(?!.*→)/g);
             break;
         case 6:
+            while(questions[randomnumber].match(/\w(?=.*→)/g) == null){
+                randomnumber = Math.floor(Math.random() * questions.length);
+            }
             var answerstoq = questions[randomnumber].match(/\w(?=.*→)/g);
             answerstoq.filter(n => n)
             var fquestn = questions[randomnumber].split(/\w(?=.*→)/g);
@@ -336,6 +386,8 @@ function question(){
 
     var attackbutton = document.createElement("button");
     attackdamagetext.appendChild(attackbutton);
+    attackdamagetext.style = "font-size: 3vw; position: absolute; z-index: 6; left: 92%; display: inline-block;";
+    attackdamagetext.style.top = 49 + "vw";
     attackbutton.classList.add('attackbutton');
     attackbutton.innerHTML = "ATTACK";
     attackbutton.addEventListener("click", checkanswer);
@@ -368,8 +420,6 @@ function checkanswer(){
 
     var randomnumber = Math.floor(Math.random() * (difmode + 2));
 
-    
-
     if(randomnumber == 0){
         damagePlayer(randomnumber, 5);
     }
@@ -384,16 +434,19 @@ function checkanswer(){
     attackbutton.addEventListener("click", question);
 }
 
-
-
 function damageEnemy(enemydamage){
+    if(player.expr >(player.orgexpr*Math.pow(exprate,player.level))){
+        player.level++;
+        console.log(player.expr, player.level, player.orgexpr*Math.pow(exprate,player.level), player.orgexpr, exprate)
+    }
     var randomnumber = Math.floor(Math.random() * 3);
     //if enemy is dead with amount of damage given
     if(enemy.health-enemydamage<1){
+        player.expr += difmode + 1 * exprboost;
         if(difmode<7){
             //if enemy is an even(slime and bat at this stage) then increase difmode.
             if(randomnumber%2 == 0){
-            difmode++;
+                difmode++;
             }
         }
         //enemy health is proportionate to difmode
@@ -404,11 +457,12 @@ function damageEnemy(enemydamage){
     }
    
     if(enemydamage>0){
+        player.expr = player.expr + 2 * exprboost;
         var enemydamagetext = document.createElement("div");
         document.getElementById("whenSignedIn").appendChild(enemydamagetext);
         enemydamagetext.style = "font-size: 4vw; position: absolute; z-index: 5; top: 40% ;left: 75%; display: inline-block;";
             enemydamagetext.innerHTML = "-" + (enemydamage);
-        
+            
         var fadeEffect = setInterval(function () {
             if (!enemydamagetext.style.opacity) {
                 enemydamagetext.style.opacity = 1;
@@ -422,11 +476,13 @@ function damageEnemy(enemydamage){
         }, 200);
     }
     enemy.health -= enemydamage;
-
     var healthchunk = (100/enemy.orghealth)*(enemy.orghealth-enemy.health);
 
     var eposx = enemy.posx;
     var eposy = canvas.height/2;
+
+    var experposx = 20;
+    var experposy = 20;
 
 
     c.beginPath();
@@ -439,7 +495,27 @@ function damageEnemy(enemydamage){
     c.fillStyle = "rgba(191, 61, 61)";
     c.rect(eposx, eposy,100-healthchunk, 10);
     c.fill();
+    if(player.level == 0){
+        var experchunk = (100/(player.orgexpr*Math.pow(exprate,player.level)))*((player.orgexpr*Math.pow(exprate,player.level))-player.expr);
+    }
+    else{
+        var experchunk = player.expr;
+        for(var doopus = player.level-1; doopus>-1;doopus--){
+            var experchunk = experchunk-player.orgexpr*Math.pow(exprate,doopus);
+        }
+        var experchunk = (100/(player.orgexpr*Math.pow(exprate,player.level)))*((player.orgexpr*Math.pow(exprate,player.level))-experchunk);
+    }
 
+    c.beginPath();
+    c.lineWidth = "2";
+    c.fillStyle = "rgba(255,255,255, 0.5)";
+    c.rect(experposx, experposy,100, 10);
+    c.stroke();
+
+    c.beginPath();
+    c.fillStyle = "rgb(138,43,226)";
+    c.rect(experposx, experposy, 100-experchunk, 10);
+    c.fill();
     
 }
 
@@ -447,7 +523,7 @@ function damageEnemy(enemydamage){
 function damagePlayer(enemydamage){
     var eposx = canvas.width-950;
     var eposy = canvas.height/8*7;
-
+    //using the cursed arguments function method
     if(arguments[1]==5){
         var enemydamagetext = document.createElement("div");
         document.getElementById("whenSignedIn").appendChild(enemydamagetext);
@@ -455,7 +531,7 @@ function damagePlayer(enemydamage){
         enemydamagetext.innerHTML = "MISS!";
         var fadeEffect = setInterval(function () {
             if (!enemydamagetext.style.opacity) {
-                enemydamagetext.style.opacity = 1;
+                enemydamagetext.style.opacity = 1;  
             }
             if (enemydamagetext.style.opacity > 0) {
                 enemydamagetext.style.opacity -= 0.1;
